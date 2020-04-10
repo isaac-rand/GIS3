@@ -1,0 +1,65 @@
+---
+title: "Mapping the World"
+subtitle: "Using the sf and spData libraries to create simple maps of the Earth"
+author: "Isaac Rand"
+date: "9 April 2020"
+output: 
+  html_document:
+    theme: yeti
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Setup
+
+### Version
+
+This tutorial was generated using the R version 3.5.3, using a different version may lead to unforeseen issues. You can check your version using output of the code chunk below. 
+
+```{r}
+version
+```
+
+### Libraries
+
+To follow along and make your own map of a world or countries within it, you will need to load several R libraries. 
+
+If this is your first time using them, you will need to install them first using:
+
+```{r, eval=FALSE}
+# if you don't need to install packages skip this part :)
+
+install.packages("sf")
+install.packages("spData")
+```
+
+Now that the packages are installed, load them now. This will step will need to be repeated every time you begin a new R session
+
+```{r}
+
+library(sf)
+library(spData)
+```
+
+
+## Mapping the World
+
+The spData library comes preloaded with an object called `world`. Each row of this object represents a country, complete with its geometry and several pieces of information about it. 
+
+Running `plot(world)` generates, by default, maps of only the first 9 attributes listed for each country (you can change this by running `max.plot = your_desired_number`). 
+
+```{r}
+plot(world)
+```
+
+Most of the time, we will want to highlight a single variable, not all of them at once. You can select a single variable to plot by appending `["variable_name"]` to the geometry object, as shown below.
+
+```{r}
+plot(world["lifeExp"])
+```
+
+This method can be used to make simple maps of any of the attributes stored in `world`,including any attributes which you add yourself! Additionally, very similar methods can be used to plot any `sfg` object which you can create yourself or import from a spatial file. You can learn more about creating `sfg` objects in section 2.2.6 of Robin Lovelace's [Geocomputation with R](https://geocompr.robinlovelace.net/spatial-class.html).
