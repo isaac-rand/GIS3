@@ -1,0 +1,78 @@
+---
+title: "Overview of Eviction Rate in Chicago"
+author: "Isaac Rand"
+date: "16 April 2020"
+output:
+  html_document:
+    theme: yeti
+    toc: no
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(sf)
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+```
+
+
+```{r, include = FALSE}
+evl_data <- st_read("C:/Users/isaac/Desktop/Spatial Regression Analysis/Eviction Lab Data _ Census Tracts _ Chicago.shp")
+evl_data_clean <- filter(evl_data, roh.16 > 1, parent == "Cook County, Illinois")
+evl_data_clean["parent"] = "Chicago, Illinois"
+
+```
+
+## What Are Evictions?
+
+A legal eviction is when a landlord forcibly removes renters from a property which the landlord owns through the court system. In the state of Illinois, this can only occur when the renter has not paid rent or otherwise violated their lease. 
+
+## How Often Do Evictions Occur?
+
+The eviction rate is the number of evictions per 100 renting households. In the City of Chicago in 2016, the eviction rate per census tract varied between 0% and 7.220%, with the mean eviction rate per tract being 1.178%. This means that, on average, 1.178% of renting households were evicted from their homes in a given census tract in the year 2016.
+
+In that same year, the mean eviction filing rate per tract was 3.505%. An eviction filing is a formal request submitted to a court to evict a renter. This means that, on average, 3.505% of renting households were under review for eviction in 2016. About 33.6% of these households were eventually evicted, resulting in the 1.178% eviction rate above.
+
+## Where Do Evictions Occur?
+
+Evictions occur everywhere where there are renters, though the eviction rate varies from place to place. The figures below shows the distribution of eviction rate among census tracts in Chicago (with more than 1 renting household). As the histogram shows, the vast majority of these tracts have eviction rates below 2%. However, as shown by the violin plot, some tracts are high outliers, with eviction rates as high as 7%. 
+
+```{r, echo = FALSE}
+histo <- ggplot(data = evl_data_clean, aes(x = er.16)) +
+  geom_histogram(binwidth = 0.5) +
+  labs(x = "Eviction Rate 2016", y = "Count") +
+  ggtitle("Histogram of 2016 Eviction Rate\n 
+          By Census Tract")
+violinplot<-ggplot(evl_data_clean, aes(x = parent, y = er.16)) +
+  labs(x = "City", y = "Eviction Rate 2016") +
+  ggtitle("Violin Plot of 2016 Eviction Rate\n 
+          By Census Tract") +
+  geom_violin(trim=FALSE) + 
+  geom_boxplot(width = 0.2)
+grid.arrange(histo, violinplot, ncol = 2)
+
+```
+
+There is a spatial pattern to where the eviction rate tends to be higher. The maps below show the patterns of eviction rate (left) and percentage of the population which self identifies racially as Black (right). Without doing further statistical analysis the significance of the correlation between race and eviction rate shown below cannot be proven, but it seems likely that they are correlated, though neither fully explains rhw other. 
+
+The census tracts which do not have more than one renting household are removed from both maps.
+
+```{r, echo = FALSE}
+er.16map <- plot(evl_data_clean["er.16"], main = "2016 Eviction Rate by Census Tract in Chicago")
+paa.16map <- plot(evl_data_clean["paa.16"], main = "2016 Percentage of Population Identifying as Black")
+```
+
+
+
+References:
+
+[Buildium: Illinois Eviction Laws](https://www.buildium.com/laws/illinois-eviction-laws/)
+
+[Eviction Lab: What is the Eviction Process?](https://evictionlab.org/why-eviction-matters/#what-is-the-eviction-process)
+
+Data Source:
+
+[Eviction Lab: Map & Data](https://evictionlab.org/map/#/2016?geography=states&type=er)
+
